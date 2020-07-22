@@ -1,7 +1,6 @@
 const express = require("express")
 const listEndpoints = require("express-list-endpoints")
-const studentsRoutes = require("./services/users")
-const projectsRoutes = require("./services/projects")
+const studentsRoutes = require("./services/profiles")
 const cors = require("cors")
 const path = require("path"); 
 const mongoose = require("mongoose")
@@ -35,8 +34,7 @@ server.use(express.json()); // parse the bodies when they are in json format
 
 server.use(loggerMiddleware);
 
-server.use("/students", studentsRoutes)
-server.use("/projects", projectsRoutes)
+server.use("/profiles", studentsRoutes)
 
 
 server.use(notFoundHandler)

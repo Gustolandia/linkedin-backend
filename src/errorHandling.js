@@ -21,7 +21,6 @@ const forbiddenHandler = (err, req, res, next) => {
 
 const catchAllHandler = (err, req, res, next) => {
   if (!res.headersSent) {
-    // check if another error handler already sent the response
     console.log(err)
     res.status(err.httpStatusCode || 500).send(err.message)
   }
