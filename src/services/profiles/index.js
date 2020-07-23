@@ -1,17 +1,67 @@
 const express = require("express")
 const ProfileSchema = require("./schema")
 const q2m = require("query-to-mongo")
-const authorization = require('sayso')
+var auth = require('basic-auth')
+const multer = require("multer")
+const path = require("path");
+const { writeFile, createReadStream } = require("fs-extra")
 
 
-const { check, valusernameationResult } = require("express-validator")
+
+
+const { check, validationResult } = require("express-validator")
 
 const router = express.Router()
+
+const upload = multer({})
+
+const profilesFolderPath = path.join(__dirname, "../../public")
 
 
 router.get("/:username", async (req, res, next) => {
   try {
+    
     const username = req.params.username
+    const profile = await ProfileSchema.findByusername(username)
+    if (profile) {
+      res.send(profile)
+    } else {
+      const error = new Error()
+      error.httpStatusCode = 404
+      next(error)
+    }
+  } catch (error) {
+    console.log(error)
+    next("While reading profiles list a problem occurred!")
+  }
+})
+router.post("/:username/picture", upload.any("picture"), async (req, res, next) => {
+  console.log("mama")
+  console.log(req.files)
+  try {
+    await writeFile(
+      path.join(profilesFolderPath, req.files[0].originalname),
+      req.files[0].buffer
+    )
+    const user = await ProfileSchema.findOneAndUpdate({ username: auth(req).name }, {image:"file:///C:/Users/Dell/Documents/GitHub/linkedin-backend/src/public/"+(req.files[0].originalname)})
+    console.log(user)
+    if (user) {
+      res.send("Ok")
+    } else {
+      const error = new Error(`User with username ${auth(req).name} not found`)
+      error.httpStatusCode = 404
+      next(error)
+    }
+  } catch (error) {
+    console.log(error)
+    next(error)
+  }
+  res.send("ok")
+})
+router.get("/me", async (req, res, next) => {
+  try {
+    
+    const username = auth(req).name
     const profile = await ProfileSchema.findByusername(username)
     if (profile) {
       res.send(profile)
@@ -27,7 +77,9 @@ router.get("/:username", async (req, res, next) => {
 })
 
 router.get("/", async (req, res, next) => {
+  console.log(auth(req).name)
   try {
+
     const query = q2m(req.query)
     const profiles = await ProfileSchema.find(query.criteria, query.options.fields)
     .skip(query.options.skip)
@@ -63,12 +115,10 @@ router.post(
       check("area")
       .isLength({ min: 2 }).withMessage("At least 2 characters")
       .exists().withMessage("Insert an area please!"),
-      check("studentusername")
-      .exists().withMessage("Needs student username")
   ],
   async (req, res, next) => {
     try {
-      const errors = valusernameationResult(req)
+      const errors = validationResult(req)
     if (!errors.isEmpty()) {
       let err = new Error()
       err.message = errors
@@ -79,48 +129,42 @@ router.post(
       const newProfile = {
         ...req.body,
         createdAt: new Date(),
+        updatedAt: new Date(),
+        username: auth(req).name,
       }
       const newP2 = new ProfileSchema(newProfile)
-      const { _username } = await newP2.save()
+      const { username } = await newP2.save()
     
-      res.status(201).send(_username)}
+      res.status(201).send(username)}
     } catch (error) {
       next(error)
     }
     })
 
-
-
-router.delete("/:username", async (req, res, next) => {
-  try {
-    const profile = await ProfileSchema.findByusernameAndDelete(req.params.username)
-    if (profile) {
-      res.send("Deleted")
-    } else {
-      const error = new Error(`profile with username ${req.params.username} not found`)
-      error.httpStatusCode = 404
-      next(error)
-    }
-  } catch (error) {
-    next(error)
-  }
-})
-
-router.put("/:username",
-  [
-    check("name")
-      .isLength({ min: 2 }).withMessage("At least 2 characters")
-      .exists().withMessage("Insert a name please!"),
-      check("description")
-      .isLength({ min: 2 }).withMessage("At least 2 characters")
-      .exists().withMessage("Insert a description please!"),
-      check("url")
-      .isURL().withMessage("Please insert a URL")
-      .exists().withMessage("Insert a url please!"),
-  ],
+router.put("/",
+[
+  check("name")
+    .isLength({ min: 2 }).withMessage("At least 2 characters")
+    .exists().withMessage("Insert a name please!"),
+    check("surname")
+    .isLength({ min: 2 }).withMessage("At least 2 characters")
+    .exists().withMessage("Insert a surname please!"),
+    check("email")
+    .isEmail().withMessage("Please insert an Email")
+    .exists().withMessage("Insert a url please!"),
+    check("bio")
+    .isLength({ min: 2 }).withMessage("At least 2 characters")
+    .exists().withMessage("Insert a bio please!"),
+    check("title")
+    .isLength({ min: 2 }).withMessage("At least 2 characters")
+    .exists().withMessage("Insert a title please!"),
+    check("area")
+    .isLength({ min: 2 }).withMessage("At least 2 characters")
+    .exists().withMessage("Insert an area please!"),
+],
 async (req, res, next) => {
   try {
-    const errors = valusernameationResult(req)
+    const errors = validationResult(req)
     if (!errors.isEmpty()) {
       let err = new Error()
       err.message = errors
@@ -128,7 +172,12 @@ async (req, res, next) => {
       next(err)
     }
     else{
-      const profile = await ProfileSchema.findByusernameAndUpdate(req.params.username, req.body)
+      const newProfile = {
+        ...req.body,
+        updatedAt: new Date(),
+        username: auth(req).name,
+      }
+      const profile = await ProfileSchema.findOneAndUpdate({ username: auth(req).name }, newProfile)
       console.log(profile)
       if (profile) {
         res.send("Ok")

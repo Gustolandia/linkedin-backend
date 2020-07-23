@@ -3,7 +3,7 @@ const mongoose = require("mongoose")
 const v = require("validator")
 
 
-const ProjectSchema = new Schema({
+const ProfileSchema = new Schema({
   name: {
     type: String,
     required: true,
@@ -70,7 +70,7 @@ const ProjectSchema = new Schema({
   createdAt: String,
 })
 
-const ProjectModel = mongoose.model("projects", ProjectSchema)
+const ProfileModel = mongoose.model("profiles", ProfileSchema)
 
 
-module.exports = ProjectModel
+module.exports = ProfileModel

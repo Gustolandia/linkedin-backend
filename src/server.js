@@ -28,7 +28,6 @@ const loggerMiddleware = (req, res, next) => {
 }
 
 const publicFolderPath = path.join(__dirname, "./public")
-
 server.use(express.static(publicFolderPath));
 server.use(express.json()); // parse the bodies when they are in json format
 
