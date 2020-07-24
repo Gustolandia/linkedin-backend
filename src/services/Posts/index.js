@@ -39,8 +39,7 @@ router.get("/:postId", async (req, res, next) => {
 
 
 router.post("/:postId/picture", upload.any("picture"), async (req, res, next) => {
-  console.log("mama")
-  console.log(req.files)
+
   try {
     const veri = await PostSchema.findById(req.params.postId)
     if (veri.username==auth(req).name){
@@ -48,8 +47,8 @@ router.post("/:postId/picture", upload.any("picture"), async (req, res, next) =>
       path.join(postsFolderPath, req.files[0].originalname),
       req.files[0].buffer
     )
-    const user = await PostSchema.findOneAndUpdate({ _id: req.params.postId }, {image:"file:///C:/Users/Dell/Documents/GitHub/linkedin-backend/src/public/"+(req.files[0].originalname), updatedAt: new Date()})
-    console.log(user)
+    const user = await PostSchema.findOneAndUpdate({ _id: req.params.postId }, {image:"http:\\\\localhost:3004\\"+(req.files[0].originalname), updatedAt: new Date()})
+
     if (user) {
       res.send("Ok")
     } else {
@@ -77,7 +76,7 @@ router.get("/", async (req, res, next) => {
     .limit(query.options.limit)
     .sort(query.options.sort)
 
-    res.send({data:posts, total:posts.length})
+    res.send(posts)
   } catch (error) {
     next(error)
   }
@@ -108,12 +107,11 @@ router.post(
         user: await ProfileSchema.find({username:auth(req).name}),
         createdAt: new Date(),
         updatedAt: new Date(),
-        postId: auth(req).name,
       }
       const newP2 = new PostSchema(newPost)
       const { _id } = await newP2.save()
     
-      res.status(201).send(_id)}
+      res.status(201).send(newP2)}
     } catch (error) {
       next(error)
     }
@@ -127,6 +125,7 @@ router.put("/:postId",
 ],
 async (req, res, next) => {
   try {
+    console.log(req.body)
     const veri = await PostSchema.findById(req.params.postId)
     if (veri.username==auth(req).name){
     const errors = validationResult(req)
@@ -142,10 +141,9 @@ async (req, res, next) => {
         username:auth(req).name,
         user: await ProfileSchema.find({username:auth(req).name}),
         updatedAt: new Date(),
-        postId: auth(req).name,
       }
-      const post = await PostSchema.findOneAndUpdate({ postId: req.params.postId }, newPost)
-      console.log(post)
+      const post = await PostSchema.findOneAndUpdate({ _id: req.params.postId }, newPost)
+      console.log(newPost)
       if (post) {
         res.send("Ok")
       } else {

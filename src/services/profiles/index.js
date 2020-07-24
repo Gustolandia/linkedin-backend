@@ -63,7 +63,7 @@ router.post("/:username/picture", upload.any("picture"), async (req, res, next) 
       path.join(profilesFolderPath, req.files[0].originalname),
       req.files[0].buffer
     )
-    const user = await ProfileSchema.findOneAndUpdate({ username: auth(req).name }, {image:"file:///C:/Users/Dell/Documents/GitHub/linkedin-backend/src/public/"+(req.files[0].originalname), updatedAt: new Date()})
+    const user = await ProfileSchema.findOneAndUpdate({ username: auth(req).name }, {image:req.files[0].originalname, updatedAt: new Date()})
     console.log(user)
     if (user) {
       res.send("Ok")
@@ -93,7 +93,7 @@ router.get("/", async (req, res, next) => {
     .limit(query.options.limit)
     .sort(query.options.sort)
 
-    res.send({data:profiles, total:profiles.length})
+    res.send(profiles)
   } catch (error) {
     next(error)
   }
@@ -229,7 +229,7 @@ async (req, res, next) => {
           path.join(profilesFolderPath, req.files[0].originalname),
           req.files[0].buffer
         )
-        const user = await ExperienceSchema.findOneAndUpdate({ _id: req.params.expId }, {image:"file:///C:/Users/Dell/Documents/GitHub/linkedin-backend/src/public/"+(req.files[0].originalname), updatedAt: new Date()})
+        const user = await ExperienceSchema.findOneAndUpdate({ _id: req.params.expId }, {image:"http:\\\\localhost:3004\\"+req.files[0].originalname, updatedAt: new Date()})
         console.log(user)
       
       if (user) {
@@ -257,7 +257,6 @@ async (req, res, next) => {
         .isLength({ min: 2 }).withMessage("At least 2 characters")
         .exists().withMessage("Insert a company please!"),
         check("startDate")
-        .isDate().withMessage("Please insert a valid date")
         .exists().withMessage("Insert a date please!"),
         check("description")
         .isLength({ min: 2 }).withMessage("At least 2 characters")
@@ -284,8 +283,8 @@ async (req, res, next) => {
         }
         const newP2 = new ExperienceSchema(newProfile)
         const { username } = await newP2.save()
-      
-        res.status(201).send(username)}
+        console.log(newP2)
+        res.status(201).send(newP2)}
       } catch (error) {
         next(error)
       }

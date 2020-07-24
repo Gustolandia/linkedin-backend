@@ -6,6 +6,8 @@ const postsRoutes = require("./services/Posts")
 const cors = require("cors")
 const path = require("path"); 
 const mongoose = require("mongoose")
+const helmet = require("helmet")
+
 
 
 
@@ -30,12 +32,13 @@ const loggerMiddleware = (req, res, next) => {
 }
 
 const publicFolderPath = path.join(__dirname, "./public")
+console.log(publicFolderPath)
 server.use(express.static(publicFolderPath));
 server.use(express.json()); // parse the bodies when they are in json format
 
 server.use(loggerMiddleware);
 
-server.use("/profiles", profilesRoutes)
+server.use("/profile", profilesRoutes)
 server.use("/posts", postsRoutes)
 
 

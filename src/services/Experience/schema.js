@@ -26,24 +26,24 @@ const ExperienceSchema = new Schema({
     type: String,
     required: true,
     lowercase: true,
-    validate: {
-      validator: async (value) => {
-        if (!v.isDate(value)) {
-          throw new Error("Start date is invalid")
-        } 
-      },
-    },
+    // validate: {
+    //   validator: async (value) => {
+    //     if (!v.isDate(value)) {
+    //       throw new Error("Start date is invalid")
+    //     } 
+    //   },
+    // },
   },
   endDate: {
     type: String,
     lowercase: true,
-    validate: {
-      validator: async (value) => {
-        if (!(v.isDate(value)||value==null)) {
-          throw new Error("End date is invalid")
-        } 
-      },
-    },
+    // validate: {
+    //   validator: async (value) => {
+    //     if (!(v.isDate(value)||value==null)) {
+    //       throw new Error("End date is invalid")
+    //     } 
+    //   },
+    // },
   },
   description: {
     type: String,
