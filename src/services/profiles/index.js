@@ -18,6 +18,23 @@ const upload = multer({})
 
 const profilesFolderPath = path.join(__dirname, "../../public")
 
+router.get("/me", async (req, res, next) => {
+  try {
+    
+    const username = auth(req).name
+    const profile = await ProfileSchema.find({username:username})
+    if (profile) {
+      res.send(profile)
+    } else {
+      const error = new Error()
+      error.httpStatusCode = 404
+      next(error)
+    }
+  } catch (error) {
+    console.log(error)
+    next("While reading profiles list a problem occurred!")
+  }
+})
 
 router.get("/:username", async (req, res, next) => {
   try {
@@ -46,7 +63,7 @@ router.post("/:username/picture", upload.any("picture"), async (req, res, next) 
       path.join(profilesFolderPath, req.files[0].originalname),
       req.files[0].buffer
     )
-    const user = await ProfileSchema.findOneAndUpdate({ username: auth(req).name }, {image:"file:///C:/Users/Dell/Documents/GitHub/linkedin-backend/src/public/"+(req.files[0].originalname)})
+    const user = await ProfileSchema.findOneAndUpdate({ username: auth(req).name }, {image:"file:///C:/Users/Dell/Documents/GitHub/linkedin-backend/src/public/"+(req.files[0].originalname), updatedAt: new Date()})
     console.log(user)
     if (user) {
       res.send("Ok")
@@ -64,23 +81,7 @@ router.post("/:username/picture", upload.any("picture"), async (req, res, next) 
 
 
 
-router.get("/me", async (req, res, next) => {
-  try {
-    
-    const username = auth(req).name
-    const profile = await ProfileSchema.findByusername(username)
-    if (profile) {
-      res.send(profile)
-    } else {
-      const error = new Error()
-      error.httpStatusCode = 404
-      next(error)
-    }
-  } catch (error) {
-    console.log(error)
-    next("While reading profiles list a problem occurred!")
-  }
-})
+
 
 router.get("/", async (req, res, next) => {
   console.log(auth(req).name)
@@ -228,16 +229,16 @@ async (req, res, next) => {
           path.join(profilesFolderPath, req.files[0].originalname),
           req.files[0].buffer
         )
-        const user = await ExperienceSchema.findOneAndUpdate({ _id: req.params.expId }, {image:"file:///C:/Users/Dell/Documents/GitHub/linkedin-backend/src/public/"+(req.files[0].originalname)})
+        const user = await ExperienceSchema.findOneAndUpdate({ _id: req.params.expId }, {image:"file:///C:/Users/Dell/Documents/GitHub/linkedin-backend/src/public/"+(req.files[0].originalname), updatedAt: new Date()})
         console.log(user)
-      }
+      
       if (user) {
         res.send("Ok")
       } else {
         const error = new Error(`User with username ${auth(req).name} not found`)
         error.httpStatusCode = 404
         next(error)
-      }
+      }}
     } catch (error) {
       console.log(error)
       next(error)
