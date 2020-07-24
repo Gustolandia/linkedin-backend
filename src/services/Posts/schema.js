@@ -15,10 +15,7 @@ const PostSchema = new Schema({
   },
   
   user: Object,
-  username:{
-    type:String,
-    unique: true,
-  },
+  username:String,
   image: String,
   updatedAt: String,
   createdAt: String,

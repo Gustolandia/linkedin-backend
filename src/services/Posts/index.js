@@ -111,9 +111,9 @@ router.post(
         postId: auth(req).name,
       }
       const newP2 = new PostSchema(newPost)
-      const { postId } = await newP2.save()
+      const { _id } = await newP2.save()
     
-      res.status(201).send(postId)}
+      res.status(201).send(_id)}
     } catch (error) {
       next(error)
     }
@@ -159,5 +159,21 @@ async (req, res, next) => {
     }
   })
   
+  router.delete("/:postId", async (req, res, next) => {
+    try {
+      const veri = await PostSchema.findById(req.params.postId)
+      if (veri.username==auth(req).name){
+      const project = await PostSchema.findByIdAndDelete(req.params.postId)
+      if (project) {
+        res.send("Deleted")
+      } else {
+        const error = new Error(`post with id ${req.params.postId} not found`)
+        error.httpStatusCode = 404
+        next(error)
+      }}
+    } catch (error) {
+      next(error)
+    }
+  })
 
 module.exports = router

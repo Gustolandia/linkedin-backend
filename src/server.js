@@ -1,6 +1,7 @@
 const express = require("express")
 const listEndpoints = require("express-list-endpoints")
 const profilesRoutes = require("./services/profiles")
+const postsRoutes = require("./services/Posts")
 
 const cors = require("cors")
 const path = require("path"); 
@@ -35,6 +36,8 @@ server.use(express.json()); // parse the bodies when they are in json format
 server.use(loggerMiddleware);
 
 server.use("/profiles", profilesRoutes)
+server.use("/posts", postsRoutes)
+
 
 
 
