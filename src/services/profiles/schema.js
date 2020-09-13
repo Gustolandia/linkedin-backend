@@ -1,5 +1,6 @@
 const { Schema } = require("mongoose")
 const mongoose = require("mongoose")
+const bcrypt = require("bcryptjs")
 const v = require("validator")
 
 
@@ -33,6 +34,11 @@ const ProfileSchema = new Schema({
         } 
       },
     },
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 7,
   },
   bio: {
     type: String,
@@ -68,9 +74,68 @@ const ProfileSchema = new Schema({
   image: String,
   updatedAt: String,
   createdAt: String,
+  refreshTokens: [
+    {
+      token: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
+},
+{ timestamps: true }
+)
+
+ProfileSchema.methods.toJSON = function () {
+  const user = this
+  const userObject = user.toObject()
+
+  delete userObject.password
+  delete userObject.__v
+
+  return userObject
+}
+
+ProfileSchema.statics.findByCredentials = async (email, password) => {
+  const user = await ProfileModel.findOne({ email })
+  const isMatch = await bcrypt.compare(password, user.password)
+  if (!isMatch) {
+    const err = new Error("Unable to login")
+    err.httpStatusCode = 401
+    throw err
+  }
+
+  return user
+}
+
+ProfileSchema.pre("save", async function (next) {
+  const user = this
+
+  if (user.isModified("password")) {
+    user.password = await bcrypt.hash(user.password, 8)
+  }
+
+  next()
+})
+
+ProfileSchema.post("validate", function (error, doc, next) {
+  if (error) {
+    error.httpStatusCode = 400
+    next(error)
+  } else {
+    next()
+  }
+})
+
+ProfileSchema.post("save", function (error, doc, next) {
+  if (error.name === "MongoError" && error.code === 11000) {
+    error.httpStatusCode = 400
+    next(error)
+  } else {
+    next()
+  }
 })
 
 const ProfileModel = mongoose.model("profiles", ProfileSchema)
-
 
 module.exports = ProfileModel

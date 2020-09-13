@@ -12,6 +12,8 @@ const helmet = require("helmet")
 
 
 
+
+
 const {
   notFoundHandler,
   unauthorizedHandler,
@@ -22,9 +24,11 @@ const {
 
 const server = express()
 
-const port = process.env.PORT || 3004
+
 
 server.use(cors())
+
+const port = process.env.PORT
 
 const loggerMiddleware = (req, res, next) => {
   console.log(`Logged ${req.url} ${req.method} -- ${new Date()}`)

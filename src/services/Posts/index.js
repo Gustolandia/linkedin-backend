@@ -6,6 +6,8 @@ var auth = require('basic-auth')
 const multer = require("multer")
 const path = require("path");
 const { writeFile, createReadStream } = require("fs-extra")
+const { authorize } = require("../middlewares/authorize")
+
 
 
 
@@ -19,7 +21,7 @@ const upload = multer({})
 const postsFolderPath = path.join(__dirname, "../../public")
 
 
-router.get("/:postId", async (req, res, next) => {
+router.get("/:postId", authorize, async (req, res, next) => {
   try {
     
     const postId = req.params.postId
@@ -38,7 +40,7 @@ router.get("/:postId", async (req, res, next) => {
 })
 
 
-router.post("/:postId/picture", upload.any("picture"), async (req, res, next) => {
+router.post("/:postId/picture", authorize, upload.any("picture"), async (req, res, next) => {
 
   try {
     const veri = await PostSchema.findById(req.params.postId)

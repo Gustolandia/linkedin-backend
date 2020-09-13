@@ -6,6 +6,9 @@ var auth = require('basic-auth')
 const multer = require("multer")
 const path = require("path");
 const { writeFile, createReadStream } = require("fs-extra")
+const { authenticate, refreshToken } = require("./authTools")
+const { authorize } = require("../middlewares/authorize")
+
 
 
 
@@ -18,7 +21,7 @@ const upload = multer({})
 
 const profilesFolderPath = path.join(__dirname, "../../public")
 
-router.get("/me", async (req, res, next) => {
+router.get("/me", authorize , async (req, res, next) => {
   try {
     
     const username = auth(req).name
@@ -36,7 +39,7 @@ router.get("/me", async (req, res, next) => {
   }
 })
 
-router.get("/:username", async (req, res, next) => {
+router.get("/:username", authorize, async (req, res, next) => {
   try {
     
     const username = req.params.username
@@ -55,7 +58,7 @@ router.get("/:username", async (req, res, next) => {
 })
 
 
-router.post("/:username/picture", upload.any("picture"), async (req, res, next) => {
+router.post("/:username/picture", authorize, upload.any("picture"), async (req, res, next) => {
   console.log("mama")
   console.log(req.files)
   try {
@@ -79,11 +82,60 @@ router.post("/:username/picture", upload.any("picture"), async (req, res, next) 
   res.send("ok")
 })
 
+router.post("/login", async (req, res, next) => {
+  try {
+    const { email, password } = req.body
+    const user = await UserModel.findByCredentials(email, password)
+    const tokens = await authenticate(user)
+    res.send(tokens)
+  } catch (error) {
+    next(error)
+  }
+})
+
+router.post("/logout", authorize, async (req, res, next) => {
+  try {
+    req.user.refreshTokens = req.user.refreshTokens.filter(
+      (t) => t.token !== req.body.refreshToken
+    )
+    await req.user.save()
+    res.send()
+  } catch (err) {
+    next(err)
+  }
+})
+
+router.post("/logoutAll", authorize, async (req, res, next) => {
+  try {
+    req.user.refreshTokens = []
+    await req.user.save()
+    res.send()
+  } catch (err) {
+    next(err)
+  }
+})
+
+router.post("/refreshToken", async (req, res, next) => {
+  const oldRefreshToken = req.body.refreshToken
+  if (!oldRefreshToken) {
+    const err = new Error("Forbidden")
+    err.httpStatusCode = 403
+    next(err)
+  } else {
+    try {
+      const newTokens = await refreshToken(oldRefreshToken)
+      res.send(newTokens)
+    } catch (error) {
+      console.log(error)
+      const err = new Error(error)
+      err.httpStatusCode = 403
+      next(err)
+    }
+  }
+})
 
 
-
-
-router.get("/", async (req, res, next) => {
+router.get("/", authorize ,async (req, res, next) => {
   console.log(auth(req).name)
   try {
 
@@ -122,7 +174,7 @@ router.post(
       check("area")
       .isLength({ min: 2 }).withMessage("At least 2 characters")
       .exists().withMessage("Insert an area please!"),
-  ],
+  ], 
   async (req, res, next) => {
     try {
       const errors = validationResult(req)
@@ -168,7 +220,7 @@ router.put("/",
     check("area")
     .isLength({ min: 2 }).withMessage("At least 2 characters")
     .exists().withMessage("Insert an area please!"),
-],
+], authorize,
 async (req, res, next) => {
   try {
     const errors = validationResult(req)
@@ -201,7 +253,7 @@ async (req, res, next) => {
 
 
 
-  router.get("/:username/experiences", async (req, res, next) => {
+  router.get("/:username/experiences", authorize, async (req, res, next) => {
     try {
       
       const username = req.params.username
@@ -220,7 +272,7 @@ async (req, res, next) => {
   })
 
 
-  router.post("/:username/experiences/:expId/picture", upload.any("picture"), async (req, res, next) => {
+  router.post("/:username/experiences/:expId/picture", authorize, upload.any("picture"), async (req, res, next) => {
     console.log("mama")
     console.log(req.files)
     try {
@@ -264,7 +316,7 @@ async (req, res, next) => {
         check("area")
         .isLength({ min: 2 }).withMessage("At least 2 characters")
         .exists().withMessage("Insert an area please!"),
-    ],
+    ], authorize, 
     async (req, res, next) => {
       try {
         const errors = validationResult(req)
