@@ -21,7 +21,7 @@
   "homepage": "https://github.com/Gustolandia/linkedin-backend#readme",
   "devDependencies": {
     "dotenv": "^8.2.0",
-    "mongoose": "^5.9.25",
+    "mongoose": "^5.10.6",
     "nodemon": "^2.0.4"
   },
   "dependencies": {
