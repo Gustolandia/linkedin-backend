@@ -2,6 +2,8 @@ const { Schema } = require("mongoose")
 const mongoose = require("mongoose")
 const bcrypt = require("bcryptjs")
 const v = require("validator")
+mongoose.set('useFindAndModify', false);
+
 
 
 const ProfileSchema = new Schema({

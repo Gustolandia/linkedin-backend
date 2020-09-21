@@ -7,11 +7,16 @@ const cors = require("cors")
 const path = require("path"); 
 const mongoose = require("mongoose")
 const helmet = require("helmet")
+var cloudinary = require('cloudinary').v2;
 
 
 
 
-
+cloudinary.config({ 
+  cloud_name: 'gustolandia', 
+  api_key: '938746943738123', 
+  api_secret: 'Od8RbciQ1iLNRK6PL29edIp8CTI' 
+});
 
 
 const {

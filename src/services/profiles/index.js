@@ -8,6 +8,8 @@ const path = require("path");
 const { writeFile, createReadStream } = require("fs-extra")
 const { authenticate, refreshToken } = require("./authTools")
 const { authorize } = require("../middlewares/authorize")
+var cloudinary = require('cloudinary').v2;
+
 
 
 
@@ -58,20 +60,18 @@ router.get("/:username", authorize, async (req, res, next) => {
 })
 
 
-router.post("/:username/picture", authorize, upload.any("picture"), async (req, res, next) => {
-  console.log("mama")
-  console.log(req.files)
+router.post("/:username/picture",authorize, upload.any("picture"), async (req, res, next) => {
   try {
     await writeFile(
       path.join(profilesFolderPath, req.files[0].originalname),
       req.files[0].buffer
     )
-    const user = await ProfileSchema.findOneAndUpdate({ username: req.body.email }, {image:req.files[0].originalname, updatedAt: new Date()})
-    console.log(user)
+    let user2 = await cloudinary.uploader.upload(path.join(profilesFolderPath, req.files[0].originalname), function(error, result) {});
+    const user = await ProfileSchema.findOneAndUpdate({ username: req.params.username }, {image:user2.url, updatedAt: new Date()})
     if (user) {
       res.send("Ok")
     } else {
-      const error = new Error(`User with username ${req.body.email} not found`)
+      const error = new Error(`User with username ${req.params.username} not found`)
       error.httpStatusCode = 404
       next(error)
     }
@@ -79,7 +79,6 @@ router.post("/:username/picture", authorize, upload.any("picture"), async (req, 
     console.log(error)
     next(error)
   }
-  res.send("ok")
 })
 
 router.post("/login", async (req, res, next) => {
@@ -276,18 +275,20 @@ async (req, res, next) => {
     console.log("mama")
     console.log(req.files)
     try {
-      if (req.params.username==req.body.email){
+      if (req.params.username==req.params.username){
         await writeFile(
           path.join(profilesFolderPath, req.files[0].originalname),
           req.files[0].buffer
         )
-        const user = await ExperienceSchema.findOneAndUpdate({ _id: req.params.expId }, {image:"http:\\\\localhost:3004\\"+req.files[0].originalname, updatedAt: new Date()})
+        let user2 = await cloudinary.uploader.upload(path.join(profilesFolderPath, req.files[0].originalname), function(error, result) {});
+
+        const user = await ExperienceSchema.findOneAndUpdate({ _id: req.params.expId }, {image:user2.url, updatedAt: new Date()})
         console.log(user)
       
       if (user) {
         res.send("Ok")
       } else {
-        const error = new Error(`User with username ${req.body.email} not found`)
+        const error = new Error(`User with username ${req.params.username} not found`)
         error.httpStatusCode = 404
         next(error)
       }}
