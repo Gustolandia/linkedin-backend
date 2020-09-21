@@ -56,7 +56,7 @@ server.use(catchAllHandler)
 console.log(listEndpoints(server))
 
 mongoose
-  .connect("mongodb://localhost:27017/strive", {
+  .connect("mongodb+srv://Gustolandia:Secreta23@linkedin.9vrgm.mongodb.net/<dbname>?retryWrites=true&w=majority", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,

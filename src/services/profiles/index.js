@@ -24,7 +24,7 @@ const profilesFolderPath = path.join(__dirname, "../../public")
 router.get("/me", authorize , async (req, res, next) => {
   try {
     
-    const username = auth(req).name
+    const username = req.body.email
     const profile = await ProfileSchema.find({username:username})
     if (profile) {
       res.send(profile)
@@ -66,12 +66,12 @@ router.post("/:username/picture", authorize, upload.any("picture"), async (req, 
       path.join(profilesFolderPath, req.files[0].originalname),
       req.files[0].buffer
     )
-    const user = await ProfileSchema.findOneAndUpdate({ username: auth(req).name }, {image:req.files[0].originalname, updatedAt: new Date()})
+    const user = await ProfileSchema.findOneAndUpdate({ username: req.body.email }, {image:req.files[0].originalname, updatedAt: new Date()})
     console.log(user)
     if (user) {
       res.send("Ok")
     } else {
-      const error = new Error(`User with username ${auth(req).name} not found`)
+      const error = new Error(`User with username ${req.body.email} not found`)
       error.httpStatusCode = 404
       next(error)
     }
@@ -85,7 +85,7 @@ router.post("/:username/picture", authorize, upload.any("picture"), async (req, 
 router.post("/login", async (req, res, next) => {
   try {
     const { email, password } = req.body
-    const user = await UserModel.findByCredentials(email, password)
+    const user = await ProfileSchema.findByCredentials(email, password)
     const tokens = await authenticate(user)
     res.send(tokens)
   } catch (error) {
@@ -136,7 +136,7 @@ router.post("/refreshToken", async (req, res, next) => {
 
 
 router.get("/", authorize ,async (req, res, next) => {
-  console.log(auth(req).name)
+  console.log(req.body.email)
   try {
 
     const query = q2m(req.query)
@@ -189,7 +189,7 @@ router.post(
         ...req.body,
         createdAt: new Date(),
         updatedAt: new Date(),
-        username: auth(req).name,
+        username: req.body.email,
       }
       const newP2 = new ProfileSchema(newProfile)
       const { username } = await newP2.save()
@@ -234,9 +234,9 @@ async (req, res, next) => {
       const newProfile = {
         ...req.body,
         updatedAt: new Date(),
-        username: auth(req).name,
+        username: req.body.email,
       }
-      const profile = await ProfileSchema.findOneAndUpdate({ username: auth(req).name }, newProfile)
+      const profile = await ProfileSchema.findOneAndUpdate({ username: req.body.email }, newProfile)
       console.log(profile)
       if (profile) {
         res.send("Ok")
@@ -276,7 +276,7 @@ async (req, res, next) => {
     console.log("mama")
     console.log(req.files)
     try {
-      if (req.params.username==auth(req).name){
+      if (req.params.username==req.body.email){
         await writeFile(
           path.join(profilesFolderPath, req.files[0].originalname),
           req.files[0].buffer
@@ -287,7 +287,7 @@ async (req, res, next) => {
       if (user) {
         res.send("Ok")
       } else {
-        const error = new Error(`User with username ${auth(req).name} not found`)
+        const error = new Error(`User with username ${req.body.email} not found`)
         error.httpStatusCode = 404
         next(error)
       }}
@@ -331,7 +331,7 @@ async (req, res, next) => {
           ...req.body,
           createdAt: new Date(),
           updatedAt: new Date(),
-          username: auth(req).name,
+          username: req.body.email,
         }
         const newP2 = new ExperienceSchema(newProfile)
         const { username } = await newP2.save()
