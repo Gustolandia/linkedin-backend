@@ -38,6 +38,7 @@
     "query-to-mongo": "^0.10.1",
     "sayso": "^2.0.0",
     "uniqid": "^5.2.0",
+    "mongoose": "^5.10.6",
     "validator": "^13.1.1"
   }
 }
