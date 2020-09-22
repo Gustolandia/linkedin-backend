@@ -9,6 +9,8 @@ const { writeFile, createReadStream } = require("fs-extra")
 const { authenticate, refreshToken } = require("./authTools")
 const { authorize } = require("../middlewares/authorize")
 var cloudinary = require('cloudinary').v2;
+const bcrypt = require("bcryptjs");
+
 
 
 
@@ -286,7 +288,7 @@ async (req, res, next) => {
         console.log(user)
       
       if (user) {
-        res.send("Ok")
+        res.status(201).send("Ok")
       } else {
         const error = new Error(`User with username ${req.params.username} not found`)
         error.httpStatusCode = 404

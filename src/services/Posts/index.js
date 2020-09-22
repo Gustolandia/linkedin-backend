@@ -70,8 +70,8 @@ router.post("/:postId/picture", authorize, upload.any("picture"), async (req, re
 
 
 
-router.get("/", async (req, res, next) => {
-  console.log(auth(req).name)
+router.get("/", authorize, async (req, res, next) => {
+
   try {
 
     const query = q2m(req.query)
@@ -80,7 +80,7 @@ router.get("/", async (req, res, next) => {
     .limit(query.options.limit)
     .sort(query.options.sort)
 
-    res.send(posts)
+    res.status(201).send(posts)
   } catch (error) {
     next(error)
   }
