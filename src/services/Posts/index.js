@@ -49,7 +49,7 @@ router.post("/:postId/picture", authorize, upload.any("picture"), async (req, re
       path.join(postsFolderPath, req.files[0].originalname),
       req.files[0].buffer
     )
-    let user2 = await cloudinary.uploader.upload(path.join(profilesFolderPath, req.files[0].originalname), function(error, result) {});
+    let user2 = await cloudinary.uploader.upload(path.join(postsFolderPath, req.files[0].originalname), function(error, result) {});
 
     const user = await PostSchema.findOneAndUpdate({ _id: req.params.postId }, {image:user2.url, updatedAt: new Date()})
 
