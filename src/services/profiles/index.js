@@ -334,7 +334,7 @@ async (req, res, next) => {
           ...req.body,
           createdAt: new Date(),
           updatedAt: new Date(),
-          username: req.body.email,
+          username: req.params.username,
         }
         const newP2 = new ExperienceSchema(newProfile)
         const { username } = await newP2.save()
