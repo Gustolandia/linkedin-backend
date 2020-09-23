@@ -44,7 +44,6 @@ router.post("/:postId/picture", authorize, upload.any("picture"), async (req, re
 
   try {
     const veri = await PostSchema.findById(req.params.postId)
-    if (veri.username==auth(req).name){
     await writeFile(
       path.join(postsFolderPath, req.files[0].originalname),
       req.files[0].buffer
@@ -59,7 +58,7 @@ router.post("/:postId/picture", authorize, upload.any("picture"), async (req, re
       const error = new Error(`User with postId ${req.params.postId } not found`)
       error.httpStatusCode = 404
       next(error)
-    }}
+    }
   } catch (error) {
     console.log(error)
     next(error)
@@ -89,12 +88,12 @@ router.get("/", authorize, async (req, res, next) => {
 
 
 router.post(
-  "/",
+  "/:username",
   [
     check("text")
       .isLength({ min: 2 }).withMessage("At least 2 characters")
       .exists().withMessage("Insert a text please!"),
-  ],
+  ], authorize,
   async (req, res, next) => {
     try {
       const errors = validationResult(req)
@@ -107,8 +106,8 @@ router.post(
     else{
       const newPost = {
         ...req.body,
-        username:auth(req).name,
-        user: await ProfileSchema.find({username:auth(req).name}),
+        username:req.params.username,
+        user: await ProfileSchema.find({username:req.params.username}),
         createdAt: new Date(),
         updatedAt: new Date(),
       }
@@ -131,7 +130,7 @@ async (req, res, next) => {
   try {
     console.log(req.body)
     const veri = await PostSchema.findById(req.params.postId)
-    if (veri.username==auth(req).name){
+    
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
       let err = new Error()
@@ -142,8 +141,8 @@ async (req, res, next) => {
     else{
       const newPost = {
         ...req.body,
-        username:auth(req).name,
-        user: await ProfileSchema.find({username:auth(req).name}),
+        username:veri.username,
+        user: await ProfileSchema.find({username:veri.username}),
         updatedAt: new Date(),
       }
       const post = await PostSchema.findOneAndUpdate({ _id: req.params.postId }, newPost)
@@ -154,7 +153,7 @@ async (req, res, next) => {
         const error = new Error(`post with postId ${req.params.postId} not found`)
         error.httpStatusCode = 404
         next(error)
-      }}
+      }
 
     }} catch(error){
       next(error);
@@ -163,8 +162,6 @@ async (req, res, next) => {
   
   router.delete("/:postId", async (req, res, next) => {
     try {
-      const veri = await PostSchema.findById(req.params.postId)
-      if (veri.username==auth(req).name){
       const project = await PostSchema.findByIdAndDelete(req.params.postId)
       if (project) {
         res.send("Deleted")
@@ -172,7 +169,7 @@ async (req, res, next) => {
         const error = new Error(`post with id ${req.params.postId} not found`)
         error.httpStatusCode = 404
         next(error)
-      }}
+      }
     } catch (error) {
       next(error)
     }
