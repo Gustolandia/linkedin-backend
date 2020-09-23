@@ -7,6 +7,7 @@ const multer = require("multer")
 const path = require("path");
 const { writeFile, createReadStream } = require("fs-extra")
 const { authorize } = require("../middlewares/authorize")
+var cloudinary = require('cloudinary').v2;
 
 
 
