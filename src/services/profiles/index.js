@@ -28,7 +28,7 @@ const profilesFolderPath = path.join(__dirname, "../../public")
 router.get("/me", authorize , async (req, res, next) => {
   try {
     
-    const username = req.body.email
+    const username = req.headers.user
     const profile = await ProfileSchema.find({username:username})
     if (profile) {
       res.send(profile)
