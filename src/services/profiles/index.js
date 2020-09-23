@@ -96,6 +96,7 @@ router.post("/login", async (req, res, next) => {
 
 router.post("/logout", authorize, async (req, res, next) => {
   try {
+    console.log(req.user)
     req.user.refreshTokens = req.user.refreshTokens.filter(
       (t) => t.token !== req.body.refreshToken
     )
@@ -108,6 +109,7 @@ router.post("/logout", authorize, async (req, res, next) => {
 
 router.post("/logoutAll", authorize, async (req, res, next) => {
   try {
+    console.log(req.user)
     req.user.refreshTokens = []
     await req.user.save()
     res.send()
@@ -179,6 +181,7 @@ router.post(
   async (req, res, next) => {
     try {
       const errors = validationResult(req)
+      console.log(req.user)
     if (!errors.isEmpty()) {
       let err = new Error()
       err.message = errors
