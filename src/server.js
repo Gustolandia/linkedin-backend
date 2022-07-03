@@ -59,9 +59,9 @@ server.use(forbiddenHandler)
 server.use(catchAllHandler)
 
 console.log(listEndpoints(server))
-
+//MONGODB does not put the name of the DB in between / and ? so you have to put it yourself!!!!!
 mongoose
-  .connect("mongodb+srv://Gustolandia:Secreta23@linkedin.9vrgm.mongodb.net/?retryWrites=true&w=majority", {
+  .connect("mongodb+srv://Gustolandia:Secreta23@linkedin.9vrgm.mongodb.net/<dbname>?retryWrites=true&w=majority", { 
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
