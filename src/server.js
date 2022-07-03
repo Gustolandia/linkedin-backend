@@ -33,7 +33,7 @@ const server = express()
 
 server.use(cors())
 
-const port = process.env.PORT
+const port = process.env.PORT;
 
 const loggerMiddleware = (req, res, next) => {
   console.log(`Logged ${req.url} ${req.method} -- ${new Date()}`)
@@ -71,4 +71,4 @@ mongoose
       console.log("Running on port", port)
     })
   )
-  .catch((err) => console.log(err))
+  .catch((err) => console.log(err)) 

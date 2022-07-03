@@ -89,8 +89,8 @@ const ProfileSchema = new Schema({
 )
 
 ProfileSchema.methods.toJSON = function () {
-  const user = this
-  const userObject = user.toObject()
+  const user = this;
+  const userObject = user.toObject();
 
   delete userObject.password
   delete userObject.__v
@@ -99,7 +99,8 @@ ProfileSchema.methods.toJSON = function () {
 }
 
 ProfileSchema.statics.findByCredentials = async (email, password) => {
-  const user = await ProfileModel.findOne({ email })
+  const user = await profilemodel.find({});
+  console.log(user);
   const isMatch = await bcrypt.compare(password, user.password)
   if (!isMatch) {
     const err = new Error("Unable to login")
@@ -138,6 +139,6 @@ ProfileSchema.post("save", function (error, doc, next) {
   }
 })
 
-const ProfileModel = mongoose.model("profiles", ProfileSchema)
+const profilemodel = mongoose.model("profiles", ProfileSchema, "<dbname>")
 
-module.exports = ProfileModel
+module.exports = profilemodel

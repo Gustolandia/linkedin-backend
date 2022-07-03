@@ -85,7 +85,7 @@ router.post("/:username/picture",authorize, upload.any("picture"), async (req, r
 
 router.post("/login", async (req, res, next) => {
   try {
-    const { email, password } = req.body
+    const { email, password } = req.body;
     const user = await ProfileSchema.findByCredentials(email, password)
     const tokens = await authenticate(user)
     res.send(tokens)
