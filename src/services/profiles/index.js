@@ -177,7 +177,6 @@ router.post(
       .exists().withMessage("Insert an area please!"),
   ], 
   async (req, res, next) => {
-    console.log(req.body.email);
     try {
       const errors = validationResult(req)
     if (!errors.isEmpty()) {

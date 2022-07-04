@@ -3,10 +3,10 @@ const listEndpoints = require("express-list-endpoints")
 const profilesRoutes = require("./services/profiles")
 const postsRoutes = require("./services/Posts")
 
-const cors = require("cors");
+const cors = require("cors")
 const path = require("path"); 
-const mongoose = require("mongoose");
-const helmet = require("helmet");
+const mongoose = require("mongoose")
+const helmet = require("helmet")
 var cloudinary = require('cloudinary').v2;
 
 
@@ -61,7 +61,7 @@ server.use(catchAllHandler)
 console.log(listEndpoints(server))
 
 mongoose
-  .connect("mongodb+srv://Gustolandia:Secreta23@linkedin.9vrgm.mongodb.net/?retryWrites=true&w=majority", {
+  .connect("mongodb+srv://Gustolandia:Secreta23@linkedin.9vrgm.mongodb.net/<dbname>?retryWrites=true&w=majority", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
