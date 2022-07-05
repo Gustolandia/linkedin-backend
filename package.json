@@ -21,7 +21,7 @@
   "homepage": "https://github.com/Gustolandia/linkedin-backend#readme",
   "devDependencies": {
     "dotenv": "^8.2.0",
-    "mongoose": "^5.10.6",
+    "mongoose": "^5.13.14",
     "nodemon": "^2.0.4"
   },
   "dependencies": {
@@ -33,9 +33,9 @@
     "express-list-endpoints": "^5.0.0",
     "express-validator": "^6.6.0",
     "fs-extra": "^9.0.1",
+    "mongoose": "^5.13.14",
     "helmet": "^3.23.3",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.10.6",
     "multer": "^1.4.2",
     "query-to-mongo": "^0.10.1",
     "sayso": "^2.0.0",
