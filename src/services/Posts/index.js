@@ -126,7 +126,7 @@ router.put("/:postId",
   check("text")
     .isLength({ min: 2 }).withMessage("At least 2 characters")
     .exists().withMessage("Insert a text please!"),
-],
+], authorize,
 async (req, res, next) => {
   try {
     console.log(req.body)
@@ -161,7 +161,7 @@ async (req, res, next) => {
     }
   })
   
-  router.delete("/:postId", async (req, res, next) => {
+  router.delete("/:postId", authorize, async (req, res, next) => {
     try {
       const project = await PostSchema.findByIdAndDelete(req.params.postId)
       if (project) {
