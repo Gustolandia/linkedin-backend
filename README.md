@@ -52,13 +52,42 @@ To deploy this project, you need to set the following environment variables (val
 
 ## Setup and Installation
 
-  "scripts": {
-    "test": "jest",
-    "dev": "nodemon -r dotenv/config ./src/server.js",
-    "debug": "nodemon --inspect -r dotenv/config ./src/server.js",
-    "start": "node ./src/server.js"
-  },
+To set up and run the LinkedIn Clone Backend, follow these steps:
 
+1. Clone the repository to your local machine.
+
+2. Install the necessary dependencies by running:
+npm install
+
+3. Set up the required environment variables. Create a `.env` file in the root directory and include the following:
+NODE_ENV=development
+PORT=3003
+JWT_SECRET=your_jwt_secret
+REFRESH_JWT_SECRET=your_refresh_jwt_secret
+
+4. To start the server, you have several script options defined in your `package.json`:
+
+- To run tests:
+  ```
+  npm run test
+  ```
+
+- For development, using nodemon for automatic server restarts on code changes:
+  ```
+  npm run dev
+  ```
+
+- To debug the application:
+  ```
+  npm run debug
+  ```
+
+- To start the server in production mode:
+  ```
+  npm start
+  ```
+
+Replace the JWT secret values with your own secure keys.
 
 ## License
 
